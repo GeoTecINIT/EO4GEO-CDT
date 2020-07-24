@@ -25,6 +25,8 @@ export class ListComponent implements OnInit {
   skillFilter = false;
   fieldFilter = false;
   filteredStudyPrograms: any[];
+  resultsByAuthor: any[];
+  resultsByDepth: any[];
   searchText: string;
   isAnonymous = null;
   ownUsrId = null;
@@ -70,8 +72,18 @@ export class ListComponent implements OnInit {
       .subscribeToStudyPrograms()
       .subscribe(studyPrograms => {
         this.studyPrograms = studyPrograms;
-        this.filteredStudyPrograms = studyPrograms;
-
+        if ( this.showOnlyDepth == -1 && this.showOnlyAuthor == -1 ){
+          this.filteredStudyPrograms = studyPrograms;
+        } else {
+          this.resultsByDepth = studyPrograms;
+          this.resultsByAuthor = studyPrograms;
+          if ( this.showOnlyAuthor >= 0 ) {
+            this.filterByAuthor(this.showOnlyAuthor);
+          }
+          if ( this.showOnlyDepth >= 0) {
+            this.filterByDepth(this.showOnlyDepth);
+          }
+        }
         /*  this.studyPrograms.forEach(sp => {
            console.log('***---***');
            console.log(sp.name);
@@ -104,6 +116,7 @@ export class ListComponent implements OnInit {
 
   removeStudyProgram(id: string) {
     this.studyprogramService.removeStudyProgram(id);
+    this.dangerModal.hide();
   }
 
   sortSPby(attr) {
@@ -275,7 +288,8 @@ export class ListComponent implements OnInit {
   }
 
   filterByDepth(depth) {
-    this.filteredStudyPrograms = [];
+    //this.filteredStudyPrograms = [];
+    this.resultsByDepth=[];
     this.paginationLimitFrom = 0;
     this.paginationLimitTo = 6;
     this.currentPage = 0;
@@ -283,17 +297,34 @@ export class ListComponent implements OnInit {
       this.applyFilters();
     }
     if (depth === -1) {
-      this.filteredStudyPrograms = this.studyPrograms;
+      if ( this.showOnlyAuthor >= 0 ){
+        this.filteredStudyPrograms = this.resultsByAuthor;
+      } else {
+        this.filteredStudyPrograms = this.studyPrograms;
+      }
+
     } else {
-      this.filteredStudyPrograms = this.studyPrograms.filter(
-        it =>
-          it.depth === depth
-      );
+      if ( this.showOnlyAuthor >= 0 ){
+        this.filteredStudyPrograms = this.resultsByAuthor.filter(
+          it =>
+            it.depth === depth
+        );
+        this.resultsByAuthor = this.studyPrograms;
+      }
+      else {
+        this.filteredStudyPrograms = this.studyPrograms.filter(
+          it =>
+            it.depth === depth
+        );
+      }
+
     }
+    this.resultsByDepth= this.filteredStudyPrograms;
   }
 
   filterByAuthor(author) {
-    this.filteredStudyPrograms = [];
+    //this.filteredStudyPrograms = [];
+    this.resultsByAuthor=[];
     this.paginationLimitFrom = 0;
     this.paginationLimitTo = 6;
     this.currentPage = 0;
@@ -301,18 +332,41 @@ export class ListComponent implements OnInit {
       this.applyFilters();
     }
     if (author === -1) { // all
-      this.filteredStudyPrograms = this.studyPrograms;
+      if (this.showOnlyDepth >= 0 ){
+        this.filteredStudyPrograms = this.resultsByDepth;
+      }
+      else {
+        this.filteredStudyPrograms = this.studyPrograms;
+      }
+
     } else if (author === 0) { // mine
-      this.filteredStudyPrograms = this.studyPrograms.filter(
-        it =>
-          it.userId === this.currentUser._id
-      );
+      if (this.showOnlyDepth >= 0 ){
+        this.filteredStudyPrograms = this.resultsByDepth.filter(
+          it =>
+            it.userId === this.currentUser._id
+        );
+      } else {
+        this.filteredStudyPrograms = this.studyPrograms.filter(
+          it =>
+            it.userId === this.currentUser._id
+        );
+      }
+
     } else if (author === 1) { // my orgs
-      this.filteredStudyPrograms = this.studyPrograms.filter(
-        it =>
-          this.currentUser.organizations.includes(it.orgId)
-      );
+      if (this.showOnlyDepth >= 0 ){
+        this.filteredStudyPrograms = this.resultsByDepth.filter(
+          it =>
+            this.currentUser.organizations.includes(it.orgId)
+        );
+      } else {
+        this.filteredStudyPrograms = this.studyPrograms.filter(
+          it =>
+            this.currentUser.organizations.includes(it.orgId)
+        );
+      }
+
     }
+    this.resultsByAuthor= this.filteredStudyPrograms;
   }
 
   range(size, startAt = 0) {
