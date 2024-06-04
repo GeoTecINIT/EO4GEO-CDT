@@ -12,7 +12,8 @@ import { User, UserService } from '../../services/user.service';
 import { OrganizationService, Organization } from '../../services/organization.service';
 import { ActivatedRoute } from '@angular/router';
 import * as cloneDeep from 'lodash/cloneDeep';
-import * as bok from '@eo4geo/bok-dataviz';
+import * as bok from '@eo4geo/find-in-bok-dataviz';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-list',
@@ -132,7 +133,12 @@ export class ListComponent implements OnInit {
       this.releaseNotesModal.basicModal.config = config;
       this.releaseNotesModal.basicModal.show({});
     }
-    bok.visualizeBOKData('#bubbles', '#textBoK');
+    const inputObject = {
+      svgId: '#bubbles',
+      textId: '#textBoK',
+      urls: environment.URL_ARRAY
+    };
+    bok.visualizeBOKData(inputObject);
   }
 
   removeStudyProgram(id: string) {

@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy, HostListener, TemplateRef } from '@angular/core';
-import * as bok from '@eo4geo/bok-dataviz';
 import { StudyProgram, StudyProgramService } from '../../services/studyprogram.service';
 import { FieldsService } from '../../services/fields.service';
 import { EscoCompetenceService, Competence } from '../../services/esco-competence.service';
@@ -15,6 +14,8 @@ import { AngularFireAnalytics } from '@angular/fire/analytics';
 import { Organization, OrganizationService } from '../../services/organization.service';
 import { User, UserService } from '../../services/user.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import * as bok from '@eo4geo/find-in-bok-dataviz';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -253,7 +254,12 @@ export class NewspComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getMode();
     this.currentTreeNode = cv.getCurrentNode();
-    bok.visualizeBOKData('#bubbles', '#textBoK');
+    const inputObject = {
+      svgId: '#bubbles',
+      textId: '#textBoK',
+      urls: environment.URL_ARRAY
+    };
+    bok.visualizeBOKData(inputObject);
     this.analytics.logEvent('New Educational Offer', { 'mode': this.mode });
 
     this.observer = new MutationObserver(mutations => {
@@ -629,19 +635,19 @@ export class NewspComponent implements OnInit, OnDestroy {
     const divs = this.textBoK.nativeElement.getElementsByTagName('div');
     if (divs['bokskills'] != null) {
       const shortCode = this.textBoK.nativeElement.getElementsByTagName('h4')[0].innerText.split(' ')[0];
-      const as = divs['bokskills'].getElementsByTagName('a');
+      const as = divs['bokskills'].getElementsByTagName('li');
       for (const skill of as) {
         newConcept.skills.push(skill.innerText);
       }
     }
     if (divs['boksource'] != null) {
       const shortCode = this.textBoK.nativeElement.getElementsByTagName('h4')[0].innerText.split(' ')[0];
-      const as = divs['boksource'].getElementsByTagName('a');
+      const as = divs['boksource'].getElementsByTagName('li');
       for (const bib of as) {
         newConcept.bibliography.push(bib.innerText);
       }
     }
-
+    console.log(newConcept.bibliography);
     let modelToUpdate;
     switch (this.currentTreeNode.data.depth) {
       case 0:
