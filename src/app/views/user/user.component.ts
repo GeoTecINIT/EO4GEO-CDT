@@ -32,8 +32,6 @@ export class UserComponent implements OnInit {
         this.userService.getUserById(user.uid).subscribe(usr => {
           if (usr != null) {
             this.user = usr;
-          } else {
-            this.userService.addNewUser(user);
           }
         });
       }

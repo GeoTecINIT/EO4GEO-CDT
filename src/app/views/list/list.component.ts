@@ -77,7 +77,6 @@ export class ListComponent implements OnInit {
     private route: ActivatedRoute,
     public afAuth: AngularFireAuth) {
     this.afAuth.auth.onAuthStateChanged(user => {
-      console.log(user);
       if (user) {
         this.isAnonymous = user.isAnonymous;
         this.ownUsrId = user.uid;
