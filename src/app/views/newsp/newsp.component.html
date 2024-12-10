@@ -107,7 +107,7 @@
                 </label>
                 <div class="pl-1">Public</div>
               </span>
-              <span style="display:inline-table; margin:2px"
+              <span style="display:inline-table; margin:2px; align-self:start;"
                 tooltip="If visibility is private, users in this organization can still see it. But users not logged in won't be able to see it. Visibility by default is public."
                 class="badge badge-primary badge-pill">i</span>
             </div>
@@ -2127,6 +2127,17 @@
 
                   </div>
                 </div>
+              </div>
+              <div *ngIf="userOrgs.length > 0" class="col-md-12 text-right">
+                <!-- <div>{{textSaved}}</div>-->
+                <button type="submit" class="btn btn-pill btn-primary" (click)="saveStudyProgram()"
+                  [hidden]="!currentTreeNode" [ngClass]="{'success': isSaved}">
+                  <i class="fa fa-save"></i> Save
+                </button>
+                <button type="submit" class="btn btn-pill btn-primary" (click)="saveStudyProgram()" routerLink="/list"
+                  [hidden]="!currentTreeNode">
+                  <i class="icon-home"></i> Save and Exit
+                </button>
               </div>
             </div>
           </div>
